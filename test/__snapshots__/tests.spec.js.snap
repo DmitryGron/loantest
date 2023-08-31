@@ -1,0 +1,52 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`CustomInput renders correctly 1`] = `
+<div
+  class="flex flex-col"
+>
+  <label>
+    
+    Test Label
+  
+  </label>
+   
+  <input
+    class="text-[#0c0c0c] border-[#6b6d6e] border-[1.5px] rounded"
+    name="test label"
+    type="text"
+  />
+</div>
+`;
+
+exports[`DecisionPage renders correctly 1`] = `
+<div
+  class="flex flex-col justify-center items-center mt-10 gap-5 w-full"
+>
+  <infosection-stub />
+   
+  <formsection-stub>
+    <custominput-stub
+      label="Personal Code:"
+      required=""
+      validate="function () { [native code] }"
+      value=""
+    />
+     
+    <custominput-stub
+      label="Loan Amount (€):"
+      required=""
+      validate="function () { [native code] }"
+      value="0"
+    />
+     
+    <custominput-stub
+      label="Loan Period (months):"
+      required=""
+      validate="function () { [native code] }"
+      value="0"
+    />
+  </formsection-stub>
+   
+  <!---->
+</div>
+`;
