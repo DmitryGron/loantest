@@ -1,49 +1,82 @@
-import express, { Request, Response } from 'express';
-
-type CreditModifiers = {
-  [key: string]: number;
-};
+import express, { Request, Response } from "express";
+import {
+  amounts,
+  creditModifiers,
+  getCreditScore,
+  loanAmountValidation,
+  loanPeriodValidation,
+  periods,
+} from "./utils";
 
 const decisionAPI = express();
 
-decisionAPI.post('/decision', (req: Request, res: Response) => {
+decisionAPI.post("/decision", (req: Request, res: Response) => {
   const { personalCode, loanAmount, loanPeriod } = req.body;
-
-  const creditModifiers: CreditModifiers = {
-    '49002010965': 0,   // Debt
-    '49002010976': 100, // Segment 1
-    '49002010987': 300, // Segment 2
-    '49002010998': 1000 // Segment 3
-  };
-
-  const creditModifier = creditModifiers[personalCode];
+  let decision: string = "negative";
+  let amount: number = 0;
+  let period: number = 0;
+  const creditModifier = creditModifiers(personalCode);
   if (creditModifier === undefined) {
     return res.status(200).send({
       decision: null,
-      message: 'unknown personal code',
-      amount: 0
+      message: "unknown personal code",
+      amount: 0,
+      period: 0,
     });
   }
-
-  const creditScore = (creditModifier / loanAmount) * loanPeriod;
-  const maxAmount = loanPeriod * creditModifier;
-
-  let decision: 'positive' | 'negative' | null;
-  let amount: number;
-
-  if (creditScore < 1 || creditModifier === 0) {
-    decision = 'negative';
-    amount = 0; // No amount approved
-  } else {
-    decision = 'positive';
-    amount = creditScore >= 1 ? maxAmount : loanAmount;
-    amount = Math.max(2000, Math.min(10000, amount));
+  if (
+    creditModifier === 0 ||
+    !loanAmountValidation(loanAmount) ||
+    !loanPeriodValidation(loanPeriod)
+  ) {
+    return res.status(200).send({
+      decision: "negative",
+      message: "decision made",
+      amount: 0,
+      period: 0,
+    });
   }
-
+  const creditScore = getCreditScore({
+    creditModifier,
+    loanAmount,
+    loanPeriod,
+  });
+  if (creditScore < 1) {
+    const minAmount = Math.floor(creditModifier * loanPeriod);
+    if (minAmount >= amounts.min) {
+      decision = "positive";
+      amount = minAmount;
+      period = loanPeriod;
+    } else {
+      const newLoanPeriod = Math.floor(loanAmount / creditModifier);
+      if (newLoanPeriod <= periods.max && newLoanPeriod >= periods.min) {
+        decision = "positive";
+        amount = loanAmount;
+        period = newLoanPeriod;
+      }
+    }
+  }
+  if (creditScore > 1) {
+    const maxAmount = Math.floor(creditModifier * loanPeriod);
+    if (maxAmount >= amounts.max) {
+      decision = "positive";
+      amount = amounts.max;
+      period = loanPeriod;
+    } else {
+      decision = "positive";
+      amount = maxAmount;
+      period = loanPeriod;
+    }
+  }
+  if (creditScore === 1) {
+    decision = "positive";
+    amount = loanAmount;
+  }
   res.status(200).send({
     decision,
-    message: 'decision made',
-    amount
+    message: "decision made",
+    amount,
+    period,
   });
 });
 

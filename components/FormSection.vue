@@ -1,5 +1,7 @@
 <template>
-  <div class="bg-white rounded border-gray-300 border-[2px] mx-10 p-10 shadow-md">
+  <div
+    class="bg-white rounded border-gray-300 border-[2px] mx-10 p-10 shadow-md"
+  >
     <h1 class="text-[#0c0c0c] text-2xl font-semibold">Loan Decision Engine</h1>
     <form class="flex flex-col gap-4 mt-4" @submit.prevent="submitForm">
       <slot></slot>
@@ -15,10 +17,10 @@
 
 <script>
 export default {
-  name: 'FormSection',
+  name: "FormSection",
   methods: {
     submitForm() {
-      this.$emit('submit');
+      this.$emit("submit");
     },
   },
 };

@@ -1,5 +1,5 @@
 export type Answer = {
-  decision: 'positive' | 'negative';
+  decision: "positive" | "negative";
   amount: number;
   message: string | null;
   period: number;

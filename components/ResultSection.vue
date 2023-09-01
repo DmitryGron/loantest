@@ -21,14 +21,13 @@
 </template>
 
 <script lang="ts">
-
 export default {
-  name: 'ResultSection',
+  name: "ResultSection",
   props: {
     answer: {
       type: Object,
       required: true,
     },
   },
-}
+};
 </script>

@@ -5,5 +5,4 @@ const API = express();
 
 API.use(decision);
 
-
 export default API;
